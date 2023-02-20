@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AsanaListFragment : Fragment() {
     private lateinit var adapter: AsanaListAdapter
+    private lateinit var list: List<Asana>
     private var _binding: FragmentAsanaListBinding? = null
     private val binding get() = _binding!!
     private val navController get() = findNavController()
@@ -78,11 +79,14 @@ class AsanaListFragment : Fragment() {
             onClick = {
                 openYogaAsana(it)
             }
-        )
+       )
         rvAsanas.adapter = this.adapter
         rvAsanas.layoutManager = LinearLayoutManager(context)
         rvAsanas.itemAnimator = DefaultItemAnimator()
-        rvAsanas.setHasFixedSize(true)
+       rvAsanas.setHasFixedSize(true)
+
+
+
     }
 
     private fun openYogaAsana(asana: Asana) {
@@ -93,6 +97,12 @@ class AsanaListFragment : Fragment() {
     private fun setListeners() {
         binding.fabOpenPose.setOnClickListener {
             checkPermission()
+        }
+
+        binding.fabOpenClass.setOnClickListener{
+            val direction = NavGraphDirections.openclass2()
+            navController.navigate(direction)
+
         }
         binding.etSearch.doOnTextChanged { text, _, _, _ ->
             if (text.isNullOrBlank()) {

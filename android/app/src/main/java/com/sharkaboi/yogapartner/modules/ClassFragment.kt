@@ -1,6 +1,7 @@
-package com.sharkaboi.yogapartner.modules.asana_pose.ui
+package com.sharkaboi.yogapartner.modules
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +19,10 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sharkaboi.yogapartner.R
 import com.sharkaboi.yogapartner.common.extensions.observe
 import com.sharkaboi.yogapartner.common.extensions.showToast
-import com.sharkaboi.yogapartner.databinding.FragmentAsanaPoseBinding
+import com.sharkaboi.yogapartner.databinding.FragmentClassBinding
+import com.sharkaboi.yogapartner.ml.classification.AsanaClass
 import com.sharkaboi.yogapartner.ml.config.DetectorOptions
+import com.sharkaboi.yogapartner.ml.models.Classification
 import com.sharkaboi.yogapartner.ml.models.PoseWithAsanaClassification
 import com.sharkaboi.yogapartner.ml.processor.AsanaProcessor
 import com.sharkaboi.yogapartner.modules.asana_pose.ui.custom.LandMarksOverlay
@@ -30,15 +33,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @ExperimentalGetImage
 @AndroidEntryPoint
-class AsanaPoseFragment : Fragment() {
+class ClassFragment : Fragment() {
+
     @Inject
     lateinit var detectorOptions: DetectorOptions
 
-    private var _binding: FragmentAsanaPoseBinding? = null
+    private var _binding: FragmentClassBinding? = null
     private val binding get() = _binding!!
     private val asanaPoseViewModel by viewModels<AsanaPoseViewModel>()
     private val navController get() = findNavController()
@@ -56,30 +61,29 @@ class AsanaPoseFragment : Fragment() {
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAsanaPoseBinding.inflate(layoutInflater, container, false)
+    ): View? {
+
+        _binding = FragmentClassBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
-        bindAllCameraUseCases()
     }
 
     override fun onPause() {
-        ttsSpeechManager.stop()
         super.onPause()
-        asanaProcessor?.run { this.stop() }
     }
 
     override fun onDestroyView() {
-        asanaProcessor?.run { this.stop() }
-        ttsSpeechManager.stop()
-        ttsSpeechManager.shutdown()
-        _binding = null
         super.onDestroyView()
     }
 
@@ -89,7 +93,11 @@ class AsanaPoseFragment : Fragment() {
         initCamera()
         initListeners()
         initObservers()
+
+    countDown("0000100")
     }
+
+
 
     private fun initTTS() {
         ttsSpeechManager = TTSSpeechManager(requireContext())
@@ -100,7 +108,6 @@ class AsanaPoseFragment : Fragment() {
     }
 
     private fun initListeners() {
-
         binding.btnSwitchCamera.setOnClickListener { switchCamera() }
         binding.toolbar.setNavigationOnClickListener { navController.navigateUp() }
     }
@@ -113,8 +120,6 @@ class AsanaPoseFragment : Fragment() {
         }
     }
 
-
-    //카메라 앞뒷면 바꾸는 기능
     private fun switchCamera() {
         if (cameraProvider == null) {
             return
@@ -145,14 +150,6 @@ class AsanaPoseFragment : Fragment() {
         binding.progress.isVisible = false
     }
 
-    private fun bindAllCameraUseCases() {
-        if (cameraProvider != null) {
-            cameraProvider!!.unbindAll()
-            setCameraPreviewToSurfaceView()
-            bindAnalysisUseCase()
-        }
-    }
-
     private fun setCameraPreviewToSurfaceView() {
         if (cameraProvider == null) {
             return
@@ -166,6 +163,14 @@ class AsanaPoseFragment : Fragment() {
         previewUseCase = builder.build()
         previewUseCase!!.setSurfaceProvider(previewView.surfaceProvider)
         cameraProvider!!.bindToLifecycle(viewLifecycleOwner, cameraSelector!!, previewUseCase)
+    }
+
+    private fun bindAllCameraUseCases() {
+        if (cameraProvider != null) {
+            cameraProvider!!.unbindAll()
+            setCameraPreviewToSurfaceView()
+            bindAnalysisUseCase()
+        }
     }
 
     private fun bindAnalysisUseCase() {
@@ -219,7 +224,10 @@ class AsanaPoseFragment : Fragment() {
                     imageProxy.height,
                     imageProxy.width,
                     isImageFlipped
+
                 )
+                Log.d("여기니","???")
+
             }
             needUpdateGraphicOverlayImageSourceInfo = false
         }
@@ -230,13 +238,14 @@ class AsanaPoseFragment : Fragment() {
                 onInference = ::onInference,
                 isLoading = ::isLoadingCallback
             )
+
+            Log.d("여기니","???")
         } catch (e: Exception) {
             Timber.d("Failed to process image. Error: " + e.localizedMessage)
             showToast(e.localizedMessage)
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
-
     private fun isLoadingCallback(isLoading: Boolean) {
         lifecycleScope.launch(Dispatchers.Main) {
             binding.progress.isVisible = isLoading
@@ -246,9 +255,11 @@ class AsanaPoseFragment : Fragment() {
     private fun onInference(poseWithAsanaClassification: PoseWithAsanaClassification) {
         resultSmoother.setInferredPose(poseWithAsanaClassification)
         setInferenceUi(poseWithAsanaClassification)
+
     }
 
-    private fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
+
+    private fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification): Classification {
         val typeToConfidences = poseWithAsanaClassification.pose.allPoseLandmarks.map {
             Pair(it.landmarkType, it.inFrameLikelihood)
         }
@@ -258,10 +269,12 @@ class AsanaPoseFragment : Fragment() {
                     && it.second < DetectorOptions.LANDMARK_CONF_THRESHOLD
         }
 
+        //Log.d("여기니",isNotConfident.toString())->true
+
         if (isNotConfident) {
             binding.tvInference.text = getString(R.string.unknown)
             binding.tvNotConfidentMessage.alpha = 1f
-            return
+          //  return
         }
 
         binding.tvNotConfidentMessage.alpha = 0f
@@ -273,9 +286,100 @@ class AsanaPoseFragment : Fragment() {
             }
             append(result.asanaClass.getFormattedString())
         }
+
+        //Log.d("result",result.toString())classification(asanaClass=adho_mukha_svanasana, confidence=99.99905)
+        //자세 결과를 텍스트로 변환해서 붙여준다
+
+
+        if(result.asanaClass!=AsanaClass.bhujangasana){
+
+        }
+
+
         binding.tvInference.text = string
 
         //자세 이름 얘기해줘
         ttsSpeechManager.speakAsana(result.asanaClass)
+
+        return result
+
     }
+
+
+
+    fun countDown(time: String) {
+        var conversionTime: Long = 0
+
+        // 1000 단위가 1초
+        // 60000 단위가 1분
+        // 60000 * 3600 = 1시간
+        var getHour = time.substring(0, 2)
+        var getMin = time.substring(2, 4)
+        var getSecond = time.substring(4, 6)
+
+        // "00"이 아니고, 첫번째 자리가 0 이면 제거
+        if (getHour.substring(0, 1) === "0") {
+            getHour = getHour.substring(1, 2)
+        }
+        if (getMin.substring(0, 1) === "0") {
+            getMin = getMin.substring(1, 2)
+        }
+        if (getSecond.substring(0, 1) === "0") {
+            getSecond = getSecond.substring(1, 2)
+        }
+
+        // 변환시간
+        conversionTime =
+            java.lang.Long.valueOf(getHour) * 1000 * 3600 + java.lang.Long.valueOf(getMin) * 60 * 1000 + java.lang.Long.valueOf(
+                getSecond
+            ) * 1000
+
+        // 첫번쨰 인자 : 원하는 시간 (예를들어 30초면 30 x 1000(주기))
+        // 두번쨰 인자 : 주기( 1000 = 1초)
+        object : CountDownTimer(conversionTime, 1000) {
+            // 특정 시간마다 뷰 변경
+            override fun onTick(millisUntilFinished: Long) {
+
+                // 시간단위
+                var hour = (millisUntilFinished / (60 * 60 * 1000)).toString()
+
+                // 분단위
+                val getMin = millisUntilFinished - millisUntilFinished / (60 * 60 * 1000)
+                var min = (getMin / (60 * 1000)).toString() // 몫
+
+                // 초단위
+                var second = (getMin % (60 * 1000) / 1000).toString() // 나머지
+
+                // 밀리세컨드 단위
+                val millis = (getMin % (60 * 1000) % 1000).toString() // 몫
+
+                // 시간이 한자리면 0을 붙인다
+                if (hour.length == 1) {
+                    hour = "0$hour"
+                }
+
+                // 분이 한자리면 0을 붙인다
+                if (min.length == 1) {
+                    min = "0$min"
+                }
+
+                // 초가 한자리면 0을 붙인다
+                if (second.length == 1) {
+                    second = "0$second"
+                }
+                binding.textView.setText("$hour:$min:$second")
+            }
+
+            // 제한시간 종료시
+            override fun onFinish() {
+
+                // 변경 후
+                binding.textView.setText("Done")
+
+                // TODO : 타이머가 모두 종료될때 어떤 이벤트를 진행할지
+
+            }
+        }.start()
+    }
+
 }

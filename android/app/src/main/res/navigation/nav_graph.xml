@@ -43,4 +43,14 @@
     <action
         android:id="@+id/openAsanaDetails"
         app:destination="@id/asanaInfoFragment" />
+    <fragment
+        android:id="@+id/classFragment"
+        android:name="com.sharkaboi.yogapartner.modules.ClassFragment"
+        android:label="fragment_class"
+        tools:layout="@layout/fragment_class" />
+    <action
+        android:id="@+id/openclass2"
+        app:destination="@id/classFragment"
+        app:enterAnim="@anim/fui_slide_in_right"
+        app:exitAnim="@anim/fui_slide_out_left" />
 </navigation>

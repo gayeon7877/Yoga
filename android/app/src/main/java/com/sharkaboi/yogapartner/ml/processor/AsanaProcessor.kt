@@ -68,7 +68,7 @@ class AsanaProcessor(
         task.addOnCompleteListener { image.close() }
     }
 
-    private fun setClassificationCallbacks(
+  private fun setClassificationCallbacks(
         task: Task<PoseWithAsanaClassification>,
         frameStartMs: Long,
         landMarksOverlay: LandMarksOverlay,
