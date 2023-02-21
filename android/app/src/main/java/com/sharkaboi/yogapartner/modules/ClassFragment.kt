@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.common.io.Files.append
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sharkaboi.yogapartner.R
 import com.sharkaboi.yogapartner.common.extensions.observe
@@ -31,7 +32,11 @@ import com.sharkaboi.yogapartner.modules.asana_pose.util.TTSSpeechManager
 import com.sharkaboi.yogapartner.modules.asana_pose.vm.AsanaPoseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.checkerframework.checker.units.qual.A
+import org.checkerframework.checker.units.qual.min
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -50,6 +55,7 @@ class ClassFragment : Fragment() {
     private val mainExecutor get() = ContextCompat.getMainExecutor(requireContext())
     private val resultSmoother = ResultSmoother()
     private lateinit var ttsSpeechManager: TTSSpeechManager
+    private lateinit var yogaClass: YogaClass
 
     private val previewView: PreviewView get() = binding.previewView
     private val landMarksOverlay: LandMarksOverlay get() = binding.landmarksOverlay
@@ -60,6 +66,8 @@ class ClassFragment : Fragment() {
     private var needUpdateGraphicOverlayImageSourceInfo = false
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,13 +85,24 @@ class ClassFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        bindAllCameraUseCases()
     }
 
     override fun onPause() {
+        ttsSpeechManager.stop()
+        yogaClass.stop()
         super.onPause()
+        asanaProcessor?.run { this.stop() }
+
     }
 
     override fun onDestroyView() {
+        asanaProcessor?.run { this.stop() }
+        ttsSpeechManager.stop()
+        ttsSpeechManager.shutdown()
+        yogaClass.stop()
+        yogaClass.shutdown()
+        _binding = null
         super.onDestroyView()
     }
 
@@ -93,14 +112,18 @@ class ClassFragment : Fragment() {
         initCamera()
         initListeners()
         initObservers()
+        initYogaClass()
 
-    countDown("0000100")
     }
 
 
 
     private fun initTTS() {
         ttsSpeechManager = TTSSpeechManager(requireContext())
+    }
+
+    private fun initYogaClass(){
+        yogaClass=YogaClass(requireContext())
     }
 
     private fun initCamera() {
@@ -163,6 +186,7 @@ class ClassFragment : Fragment() {
         previewUseCase = builder.build()
         previewUseCase!!.setSurfaceProvider(previewView.surfaceProvider)
         cameraProvider!!.bindToLifecycle(viewLifecycleOwner, cameraSelector!!, previewUseCase)
+
     }
 
     private fun bindAllCameraUseCases() {
@@ -226,12 +250,13 @@ class ClassFragment : Fragment() {
                     isImageFlipped
 
                 )
-                Log.d("여기니","???")
+
 
             }
             needUpdateGraphicOverlayImageSourceInfo = false
         }
         try {
+
             asanaProcessor!!.processImageProxy(
                 imageProxy,
                 landMarksOverlay,
@@ -239,7 +264,6 @@ class ClassFragment : Fragment() {
                 isLoading = ::isLoadingCallback
             )
 
-            Log.d("여기니","???")
         } catch (e: Exception) {
             Timber.d("Failed to process image. Error: " + e.localizedMessage)
             showToast(e.localizedMessage)
@@ -259,7 +283,7 @@ class ClassFragment : Fragment() {
     }
 
 
-    private fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification): Classification {
+     fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
         val typeToConfidences = poseWithAsanaClassification.pose.allPoseLandmarks.map {
             Pair(it.landmarkType, it.inFrameLikelihood)
         }
@@ -274,12 +298,14 @@ class ClassFragment : Fragment() {
         if (isNotConfident) {
             binding.tvInference.text = getString(R.string.unknown)
             binding.tvNotConfidentMessage.alpha = 1f
-          //  return
+            return
         }
+
 
         binding.tvNotConfidentMessage.alpha = 0f
 
         val result = resultSmoother.getMajorityPose()
+
         val string = buildString {
             if (detectorOptions.shouldShowConfidence()) {
                 append("${result.confidence.toInt()}% - ")
@@ -287,28 +313,68 @@ class ClassFragment : Fragment() {
             append(result.asanaClass.getFormattedString())
         }
 
-        //Log.d("result",result.toString())classification(asanaClass=adho_mukha_svanasana, confidence=99.99905)
+        //Log.d("result",result.toString())classification(asanaClass= AsanaClass.adho_mukha_svanasana, confidence=99.99905)
         //자세 결과를 텍스트로 변환해서 붙여준다
-
-
-        if(result.asanaClass!=AsanaClass.bhujangasana){
-
-        }
-
 
         binding.tvInference.text = string
 
         //자세 이름 얘기해줘
         ttsSpeechManager.speakAsana(result.asanaClass)
 
-        return result
+//         test(result.asanaClass)
+
+//        if(result.asanaClass==AsanaClass.adho_mukha_svanasana) {
+//          dowork()
+//        }
+//
+//         if(result.asanaClass==AsanaClass.ustrasana){
+//
+//         }
+
+
+
+
+
+     }
+
+//    fun test(asanaClass:AsanaClass ){
+//        if(asanaClass== AsanaClass.adho_mukha_svanasana) {
+//            dowork()
+//            ttsSpeechManager.speakNextAsana(AsanaClass.bidalasana)
+//        }
+//        if(asanaClass==AsanaClass.bidalasana){
+//            dowork2()
+//            ttsSpeechManager.speakNextAsana(AsanaClass.ustrasana)
+//        }
+//    }
+
+  suspend fun dowork(){
+
+        asanaProcessor?.run { this.stop() }
+            countDown("0000050")
+            Log.d("work","work1")
+    }
+
+ suspend fun dowork2(){
+        delay(6000)
+        countDown("0000050")
+        Log.d("work","work2")
 
     }
+
+    private fun works(){
+        GlobalScope.launch {
+            val one=dowork()
+            val two=dowork2()
+        }
+    }
+
 
 
 
     fun countDown(time: String) {
         var conversionTime: Long = 0
+
 
         // 1000 단위가 1초
         // 60000 단위가 1분
@@ -369,6 +435,7 @@ class ClassFragment : Fragment() {
                 }
                 binding.textView.setText("$hour:$min:$second")
             }
+            lateinit var asanaClass: AsanaClass
 
             // 제한시간 종료시
             override fun onFinish() {
@@ -377,8 +444,13 @@ class ClassFragment : Fragment() {
                 binding.textView.setText("Done")
 
                 // TODO : 타이머가 모두 종료될때 어떤 이벤트를 진행할지
+              // ttsSpeechManager.speakNextAsana( asanaClass)
+
+
+
 
             }
+
         }.start()
     }
 
