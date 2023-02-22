@@ -22,6 +22,7 @@ import com.sharkaboi.yogapartner.common.extensions.observe
 import com.sharkaboi.yogapartner.common.extensions.showToast
 import com.sharkaboi.yogapartner.databinding.FragmentClassBinding
 import com.sharkaboi.yogapartner.ml.classification.AsanaClass
+import com.sharkaboi.yogapartner.ml.classification.TFLiteAsanaClassifier
 import com.sharkaboi.yogapartner.ml.config.DetectorOptions
 import com.sharkaboi.yogapartner.ml.models.Classification
 import com.sharkaboi.yogapartner.ml.models.PoseWithAsanaClassification
@@ -67,8 +68,6 @@ class ClassFragment : Fragment() {
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
     private var cameraSelector: CameraSelector? = null
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -112,18 +111,18 @@ class ClassFragment : Fragment() {
         initCamera()
         initListeners()
         initObservers()
-        initYogaClass()
-
+        //initYogaClass()
+        test()
     }
-
 
 
     private fun initTTS() {
         ttsSpeechManager = TTSSpeechManager(requireContext())
     }
 
-    private fun initYogaClass(){
-        yogaClass=YogaClass(requireContext())
+    private fun initYogaClass() {
+        yogaClass = YogaClass(requireContext())
+
     }
 
     private fun initCamera() {
@@ -136,8 +135,7 @@ class ClassFragment : Fragment() {
     }
 
     private fun initObservers() {
-        observe(asanaPoseViewModel.processCameraProvider) {
-                provider: ProcessCameraProvider? ->
+        observe(asanaPoseViewModel.processCameraProvider) { provider: ProcessCameraProvider? ->
             cameraProvider = provider
             bindAllCameraUseCases()
         }
@@ -165,7 +163,7 @@ class ClassFragment : Fragment() {
                 return
             }
         } catch (e: Exception) {
-            Log.d("sdf","sdfsd")
+            Log.d("sdf", "sdfsd")
         }
         showToast(
             "This device does not have lens with facing: $newLensFacing"
@@ -198,6 +196,7 @@ class ClassFragment : Fragment() {
     }
 
     private fun bindAnalysisUseCase() {
+        Log.d("여긴?", "응!!!")
         if (cameraProvider == null) {
             return
         }
@@ -213,6 +212,7 @@ class ClassFragment : Fragment() {
         resultSmoother.clearCache()
 
         try {
+
             asanaProcessor = AsanaProcessor(detectorOptions)
         } catch (e: Exception) {
             Timber.d("Can not create image processor", e)
@@ -270,6 +270,7 @@ class ClassFragment : Fragment() {
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
+
     private fun isLoadingCallback(isLoading: Boolean) {
         lifecycleScope.launch(Dispatchers.Main) {
             binding.progress.isVisible = isLoading
@@ -282,8 +283,22 @@ class ClassFragment : Fragment() {
 
     }
 
+    fun test() {
+        Log.d("왔니", "응!!")
+        analysisUseCase?.setAnalyzer(mainExecutor) { imageProxy: ImageProxy ->
+            handleImageProxy(imageProxy)
+            asanaProcessor!!.processImageProxy(
+                imageProxy,
+                landMarksOverlay,
+                onInference = ::onInference,
+                isLoading = ::isLoadingCallback
+            )
+        }
 
-     fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
+    }
+
+
+    fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
         val typeToConfidences = poseWithAsanaClassification.pose.allPoseLandmarks.map {
             Pair(it.landmarkType, it.inFrameLikelihood)
         }
@@ -323,19 +338,37 @@ class ClassFragment : Fragment() {
 
 //         test(result.asanaClass)
 
-//        if(result.asanaClass==AsanaClass.adho_mukha_svanasana) {
-//          dowork()
+        if (result.asanaClass == AsanaClass.adho_mukha_svanasana) {
+            asanaProcessor?.stop()
+            countDown("0000100",AsanaClass.bidalasana)
+            Log.d("work","work1")
+
+        }
+        if (result.asanaClass==AsanaClass.bidalasana){
+            asanaProcessor?.stop()
+            countDown("0000100",AsanaClass.adho_mukha_svanasana)
+            Log.d("work","여긴 왜 안와?")
+        }
+//        analysisUseCase?.setAnalyzer(mainExecutor) { imageProxy: ImageProxy ->
+//            handleImageProxy(imageProxy)
+//            asanaProcessor!!.processImageProxy(
+//                imageProxy,
+//                landMarksOverlay,
+//                onInference = ::onInference,
+//                isLoading = ::isLoadingCallback
+//            )
+//            Log.d("제발","제발")
 //        }
-//
+
+
+    }
+
 //         if(result.asanaClass==AsanaClass.ustrasana){
 //
 //         }
 
 
 
-
-
-     }
 
 //    fun test(asanaClass:AsanaClass ){
 //        if(asanaClass== AsanaClass.adho_mukha_svanasana) {
@@ -348,16 +381,14 @@ class ClassFragment : Fragment() {
 //        }
 //    }
 
-  suspend fun dowork(){
+ fun dowork(){
 
-        asanaProcessor?.run { this.stop() }
-            countDown("0000050")
-            Log.d("work","work1")
+
     }
 
  suspend fun dowork2(){
         delay(6000)
-        countDown("0000050")
+      //  countDown("0000050")
         Log.d("work","work2")
 
     }
@@ -372,7 +403,7 @@ class ClassFragment : Fragment() {
 
 
 
-    fun countDown(time: String) {
+    fun countDown(time: String,asanaClass: AsanaClass) {
         var conversionTime: Long = 0
 
 
@@ -434,17 +465,21 @@ class ClassFragment : Fragment() {
                     second = "0$second"
                 }
                 binding.textView.setText("$hour:$min:$second")
+
             }
-            lateinit var asanaClass: AsanaClass
+
 
             // 제한시간 종료시
             override fun onFinish() {
+
 
                 // 변경 후
                 binding.textView.setText("Done")
 
                 // TODO : 타이머가 모두 종료될때 어떤 이벤트를 진행할지
-              // ttsSpeechManager.speakNextAsana( asanaClass)
+                ttsSpeechManager.speakNextAsana(asanaClass)
+                onResume()
+
 
 
 
