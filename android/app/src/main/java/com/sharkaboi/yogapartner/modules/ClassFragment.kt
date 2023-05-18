@@ -346,9 +346,15 @@ class ClassFragment : Fragment() {
         }
         if (result.asanaClass==AsanaClass.bidalasana){
             asanaProcessor?.stop()
-            countDown("0000100",AsanaClass.adho_mukha_svanasana)
+            countDown("0000100",AsanaClass.bhujangasana)
             Log.d("work","여긴 왜 안와?")
         }
+        if (result.asanaClass==AsanaClass.bhujangasana){
+            asanaProcessor?.stop()
+            countDown("0000100",AsanaClass.ustrasana)
+            Log.d("work","여긴 왜 안와?")
+        }
+
 //        analysisUseCase?.setAnalyzer(mainExecutor) { imageProxy: ImageProxy ->
 //            handleImageProxy(imageProxy)
 //            asanaProcessor!!.processImageProxy(
