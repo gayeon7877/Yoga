@@ -28,7 +28,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:scaleType="centerCrop"
-                tools:src="@tools:sample/backgrounds/scenic" />
+                tools:src="@drawable/ic_camera_switch" />
 
             <TextView
                 android:id="@+id/tvName"
@@ -40,12 +40,12 @@
                 android:textFontWeight="700"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:text="11111"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnSeeDetails"
                 app:layout_constraintStart_toEndOf="@id/ivThumbnail"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="UnusedAttribute"
-                tools:text="Savasana" />
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSeeDetails"

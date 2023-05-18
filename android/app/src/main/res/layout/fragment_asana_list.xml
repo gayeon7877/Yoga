@@ -85,7 +85,7 @@
         tools:ignore="UnusedAttribute" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAsanas"
+        android:id="@+id/recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
