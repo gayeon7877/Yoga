@@ -33,11 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNav()
 
-       // result=tftest.classify(pose)
-       // print(result)
 
-
-        Log.d("test","testing...")
 
     }
 
