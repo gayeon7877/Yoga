@@ -107,6 +107,7 @@ class AsanaListFragment : Fragment() {
         }
 
         binding.fabOpenClass.setOnClickListener{
+            checkPermission()
             val direction = NavGraphDirections.openclass2()
             navController.navigate(direction)
 

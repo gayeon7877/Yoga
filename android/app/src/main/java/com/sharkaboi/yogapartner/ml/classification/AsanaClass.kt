@@ -16,7 +16,7 @@ enum class AsanaClass {
 
     fun getFormattedString(): String {
         val string = when (this) {
-            UNKNOWN -> "Unknown"
+            UNKNOWN -> "알수없음"
             adho_mukha_svanasana -> "adho mukha svanasana"
             bhujangasana -> "bhujangasana"
             phalakasana -> "phalakasana"
