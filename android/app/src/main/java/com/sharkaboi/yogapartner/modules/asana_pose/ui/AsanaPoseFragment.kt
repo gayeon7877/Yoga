@@ -24,11 +24,14 @@ import com.sharkaboi.yogapartner.ml.models.PoseWithAsanaClassification
 import com.sharkaboi.yogapartner.ml.processor.AsanaProcessor
 import com.sharkaboi.yogapartner.modules.asana_pose.ui.custom.LandMarksOverlay
 import com.sharkaboi.yogapartner.modules.asana_pose.util.ResultSmoother
+import com.sharkaboi.yogapartner.modules.asana_pose.util.TTSSearchManager
 import com.sharkaboi.yogapartner.modules.asana_pose.util.TTSSpeechManager
 import com.sharkaboi.yogapartner.modules.asana_pose.vm.AsanaPoseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,7 +47,7 @@ class AsanaPoseFragment : Fragment() {
     private val navController get() = findNavController()
     private val mainExecutor get() = ContextCompat.getMainExecutor(requireContext())
     private val resultSmoother = ResultSmoother()
-    private lateinit var ttsSpeechManager: TTSSpeechManager
+    private lateinit var ttsSearchManager: TTSSearchManager
 
     private val previewView: PreviewView get() = binding.previewView
     private val landMarksOverlay: LandMarksOverlay get() = binding.landmarksOverlay
@@ -70,15 +73,15 @@ class AsanaPoseFragment : Fragment() {
     }
 
     override fun onPause() {
-        ttsSpeechManager.stop()
+        ttsSearchManager.stop()
         super.onPause()
         asanaProcessor?.run { this.stop() }
     }
 
     override fun onDestroyView() {
         asanaProcessor?.run { this.stop() }
-        ttsSpeechManager.stop()
-        ttsSpeechManager.shutdown()
+        ttsSearchManager.stop()
+        ttsSearchManager.shutdown()
         _binding = null
         super.onDestroyView()
     }
@@ -92,7 +95,7 @@ class AsanaPoseFragment : Fragment() {
     }
 
     private fun initTTS() {
-        ttsSpeechManager = TTSSpeechManager(requireContext())
+        ttsSearchManager = TTSSearchManager(requireContext())
     }
 
     private fun initCamera() {
@@ -261,6 +264,13 @@ class AsanaPoseFragment : Fragment() {
         if (isNotConfident) {
             binding.tvInference.text = getString(R.string.unknown)
             binding.tvNotConfidentMessage.alpha = 1f
+            if (typeToConfidences.isEmpty()){
+
+                runBlocking {
+                    ttsSearchManager.human()
+                    delay(2000L)
+                }
+            }
             return
         }
 
@@ -276,6 +286,6 @@ class AsanaPoseFragment : Fragment() {
         binding.tvInference.text = string
 
         //자세 이름 얘기해줘
-        ttsSpeechManager.speakAsana1(result.asanaClass)
+        ttsSearchManager.speakAsana(result.asanaClass)
     }
 }

@@ -80,24 +80,6 @@ class TTSSpeechManager(context: Context) {
         tts.speak(textToBeSpoken, QUEUE_FLUSH, null, System.currentTimeMillis().toString())
     }
 
-    fun speakAsana1(asanaClass: AsanaClass) {
-        if (asanaClass == AsanaClass.UNKNOWN) {
-            return
-        }
-
-        if (lastSpokenAsana == asanaClass) {
-            return
-        }
-
-        lastSpokenAsana = asanaClass
-
-        val textToBeSpoken = buildString {
-
-            append(asanaClass.getFormattedString())
-            append(" 입니다")
-        }
-        tts.speak(textToBeSpoken, QUEUE_FLUSH, null, System.currentTimeMillis().toString())
-    }
     fun stop() {
         tts.stop()
     }
@@ -105,4 +87,5 @@ class TTSSpeechManager(context: Context) {
     fun shutdown() {
         tts.shutdown()
     }
+
 }
