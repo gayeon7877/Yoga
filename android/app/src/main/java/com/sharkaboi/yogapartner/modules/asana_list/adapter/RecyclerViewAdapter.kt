@@ -55,7 +55,7 @@ class RecyclerViewAdapter(private val dataList: List<DataItem>) :
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
                 clickListener?.onItemClick(position)
-                Log.d("clicked","clicked")
+                Log.d("clicked","clickeddd")
 
             }
         }
