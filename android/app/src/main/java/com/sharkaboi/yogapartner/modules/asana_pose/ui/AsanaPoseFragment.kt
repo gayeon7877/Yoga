@@ -276,6 +276,6 @@ class AsanaPoseFragment : Fragment() {
         binding.tvInference.text = string
 
         //자세 이름 얘기해줘
-        ttsSpeechManager.speakAsana(result.asanaClass)
+        ttsSpeechManager.speakAsana1(result.asanaClass)
     }
 }
