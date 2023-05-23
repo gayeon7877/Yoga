@@ -63,12 +63,15 @@ class AsanaListFragment : Fragment() {
         recyclerView.layoutManager = gridLayoutManager
 
 
-
+        recyclerView.setOnClickListener(){
+            Log.d("1","1")
+        }
 
 
         // 어댑터 초기화
-        recyclerViewAdapter = RecyclerViewAdapter(dataList)
+        recyclerViewAdapter = RecyclerViewAdapter(dataList,this)
         recyclerView.adapter = recyclerViewAdapter
+
 
         return view
     }

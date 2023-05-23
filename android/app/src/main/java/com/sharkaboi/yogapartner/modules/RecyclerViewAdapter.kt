@@ -11,6 +11,16 @@ import com.sharkaboi.yogapartner.R
 class RecyclerViewAdapter(private val dataList: List<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    interface OnItemClickListner{
+        fun onItemClick(view: View, position: Int)
+    }
+    //리스너 인터페이스 객체를 전달하는 메서드 선언
+    fun setOnItemclickListner(onItemClickListner: OnItemClickListner){
+        itemClickListner = onItemClickListner
+    }
+
+    //전달된 객체를 저장할 변수 정의
+    private lateinit var itemClickListner: OnItemClickListner
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_layout, parent, false)
