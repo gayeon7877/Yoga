@@ -112,7 +112,7 @@ class ClassFragment : Fragment() {
         initCamera()
         initListeners()
         initObservers()
-        //initYogaClass()
+        initYogaClass()
         test()
     }
 

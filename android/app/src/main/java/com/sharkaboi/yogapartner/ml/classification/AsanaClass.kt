@@ -16,17 +16,17 @@ enum class AsanaClass {
 
     fun getFormattedString(): String {
         val string = when (this) {
-            UNKNOWN -> "알수없음"
-            adho_mukha_svanasana -> "adho mukha svanasana"
-            bhujangasana -> "bhujangasana"
-            phalakasana -> "phalakasana"
-            ustrasana -> "ustrasana"
-            utkatasana -> "utkatasana"
-            virabhadrasana_i -> "virabhadrasana 1"
-            virabhadrasana_ii -> "virabhadrasana 2"
-            utkata_konasana -> "utkata konasana"
-            bidalasana -> "bidalasana"
-            vrikshasana -> "vrikshasana"
+            UNKNOWN -> "알 수 없음"
+            adho_mukha_svanasana -> "다운독 자세"
+            bhujangasana -> "코브라 자세"
+            phalakasana -> "플랭크 자세"
+            ustrasana -> "낙타 자세"
+            utkatasana -> "의자 자세"
+            virabhadrasana_i -> "전사 자세 1"
+            virabhadrasana_ii -> "전사 자세 2"
+            utkata_konasana -> "여신 자세"
+            bidalasana -> "고양이 자세"
+            vrikshasana -> "나무 자세"
         }
         return string
     }

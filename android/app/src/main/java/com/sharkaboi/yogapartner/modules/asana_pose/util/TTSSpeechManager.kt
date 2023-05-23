@@ -92,8 +92,9 @@ class TTSSpeechManager(context: Context) {
         lastSpokenAsana = asanaClass
 
         val textToBeSpoken = buildString {
-            append("You are doing ")
+
             append(asanaClass.getFormattedString())
+            append(" 입니다")
         }
         tts.speak(textToBeSpoken, QUEUE_FLUSH, null, System.currentTimeMillis().toString())
     }
