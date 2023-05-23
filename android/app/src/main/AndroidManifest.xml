@@ -23,6 +23,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+
         android:name=".YogaPartner"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

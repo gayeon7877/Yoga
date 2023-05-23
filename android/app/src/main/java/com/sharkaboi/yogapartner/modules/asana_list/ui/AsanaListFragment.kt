@@ -1,6 +1,7 @@
 package com.sharkaboi.yogapartner.modules.asana_list.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,8 @@ import com.sharkaboi.yogapartner.common.extensions.showToast
 import com.sharkaboi.yogapartner.data.models.Asana
 import com.sharkaboi.yogapartner.databinding.FragmentAsanaListBinding
 import com.sharkaboi.yogapartner.modules.asana_list.DataItem
+import com.sharkaboi.yogapartner.modules.asana_list.FirstFragment
+import com.sharkaboi.yogapartner.modules.asana_list.adapter.OnItemClickListener
 import com.sharkaboi.yogapartner.modules.asana_list.adapter.RecyclerViewAdapter
 import com.sharkaboi.yogapartner.modules.asana_list.vm.AsanaListViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -58,6 +61,8 @@ class AsanaListFragment : Fragment() {
         val recyclerView = binding.recyclerview
         val gridLayoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.layoutManager = gridLayoutManager
+
+
 
 
 
@@ -130,4 +135,6 @@ class AsanaListFragment : Fragment() {
         val direction = NavGraphDirections.openAsanaPose()
         navController.navigate(direction)
     }
+
+
 }

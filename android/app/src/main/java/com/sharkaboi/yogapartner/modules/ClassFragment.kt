@@ -2,6 +2,7 @@ package com.sharkaboi.yogapartner.modules
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -336,7 +337,8 @@ class ClassFragment : Fragment() {
         //자세 이름 얘기해줘
         ttsSpeechManager.speakAsana(result.asanaClass)
 
-//         test(result.asanaClass)
+
+
 
         if (result.asanaClass == AsanaClass.adho_mukha_svanasana) {
             asanaProcessor?.stop()
