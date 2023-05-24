@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/firstfragment"
+    android:id="@+id/thirdfragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -37,21 +37,20 @@
         app:layout_constraintBottom_toTopOf="@id/toolbar">
 
     </FrameLayout>
-
     <ImageView
-        android:id="@+id/image1"
+        android:id="@+id/image3"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:src="@drawable/yoga1"
+        android:src="@drawable/yoga2"
         android:scaleType="fitXY"
         tools:ignore="MissingConstraints"></ImageView>
     <TextView
-        android:id="@+id/text1"
-        app:layout_constraintTop_toBottomOf="@+id/image1"
+        android:id="@+id/text3"
+        app:layout_constraintTop_toBottomOf="@+id/image3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Meditation"
+        android:text="Tree Pose"
         android:paddingLeft="5dp"
         android:textColor="@color/black"
         android:textSize="40dp"
@@ -60,13 +59,11 @@
         ></TextView>
     <TextView
         android:paddingLeft="3dp"
-        app:layout_constraintTop_toBottomOf="@+id/text1"
+        app:layout_constraintTop_toBottomOf="@+id/text3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
         android:textSize="15dp"
-        android:text="Meditation can give you a sense of calm, peace and balance that can benefit both your emotional well-being and your overall health. You can also use it to relax and cope with stress by refocusing your attention on something calming. "
-    >   </TextView>
-
+        android:text="  Bring your hands to your heart. Center. I've seen a big inhale. And reach your hands up so it's like growing the branches of your tree. "
+        >   </TextView>
 </androidx.constraintlayout.widget.ConstraintLayout>
-

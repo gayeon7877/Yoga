@@ -117,15 +117,7 @@ class AsanaListFragment : Fragment() {
             navController.navigate(direction)
 
         }
-        binding.etSearch.doOnTextChanged { text, _, _, _ ->
-            if (text.isNullOrBlank()) {
-                viewModel.resetSearch()
-                return@doOnTextChanged
-            }
 
-            viewModel.search(text.toString())
-        }
-        binding.btnSettings.setOnClickListener { openSettings() }
     }
 
     private fun checkPermission() {

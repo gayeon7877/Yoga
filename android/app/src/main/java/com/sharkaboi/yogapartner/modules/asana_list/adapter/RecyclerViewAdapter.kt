@@ -11,10 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sharkaboi.yogapartner.R
 import com.sharkaboi.yogapartner.databinding.ItemLayoutBinding
 import com.sharkaboi.yogapartner.modules.asana_list.DataItem
 import com.sharkaboi.yogapartner.modules.asana_list.FirstFragment
+import com.sharkaboi.yogapartner.modules.asana_list.ForthFragment
+import com.sharkaboi.yogapartner.modules.asana_list.ThirdFragment
+import com.sharkaboi.yogapartner.modules.asana_list.vm.SecondFragment
 
 
 class RecyclerViewAdapter(private val dataList: List<DataItem>, private val fragment: Fragment) :
@@ -70,14 +74,24 @@ class RecyclerViewAdapter(private val dataList: List<DataItem>, private val frag
                 clickListener?.onItemClick(position)
                 Log.d("clicked", position.toString())
 
-                val nextFragment = FirstFragment()
+                val nextFragment: Fragment = when (position) {
+                    0 -> FirstFragment()
+                    // 첫 번째 프래그먼트
+                    1 -> SecondFragment() // 두 번째 프래그먼트
+                    2 -> ThirdFragment() // 세 번째 프래그먼트
+                    3 -> ForthFragment() // 네 번째 프래그먼트
+                    else -> throw IllegalArgumentException("Invalid position")
+                }
+
                 val fragmentManager = fragment.childFragmentManager
                 val containerId = fragment.requireView().findViewById<ViewGroup>(R.id.list).id
+
                 fragmentManager.beginTransaction()
                     .add(containerId, nextFragment)
                     .addToBackStack(null)
                     .commitAllowingStateLoss()
             }
         }
+
 
     }}
