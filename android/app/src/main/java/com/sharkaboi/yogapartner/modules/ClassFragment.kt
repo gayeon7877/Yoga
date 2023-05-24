@@ -149,6 +149,7 @@ class ClassFragment : Fragment() {
 
         binding.progress.isVisible = true
         val newLensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+            ttsSpeechManager.speak()
             CameraSelector.LENS_FACING_BACK
         } else {
             CameraSelector.LENS_FACING_FRONT
@@ -343,18 +344,45 @@ class ClassFragment : Fragment() {
         if (result.asanaClass == AsanaClass.adho_mukha_svanasana) {
             asanaProcessor?.stop()
             countDown("0000100",AsanaClass.bidalasana)
-            Log.d("work","work1")
+
 
         }
         if (result.asanaClass==AsanaClass.bidalasana){
             asanaProcessor?.stop()
             countDown("0000100",AsanaClass.bhujangasana)
-            Log.d("work","여긴 왜 안와?")
+
         }
         if (result.asanaClass==AsanaClass.bhujangasana){
             asanaProcessor?.stop()
-            countDown("0000100",AsanaClass.ustrasana)
-            Log.d("work","여긴 왜 안와?")
+            countDown("0000200",AsanaClass.ustrasana)
+
+        }
+        if(result.asanaClass==AsanaClass.ustrasana){
+            asanaProcessor?.stop()
+            countDown("0000200",AsanaClass.phalakasana)
+        }
+
+        if(result.asanaClass==AsanaClass.phalakasana){
+            asanaProcessor?.stop()
+            countDown("0000200",AsanaClass.utkatasana)
+        }
+
+        if(result.asanaClass==AsanaClass.utkatasana){
+            asanaProcessor?.stop()
+            countDown("000300",AsanaClass.virabhadrasana_i)
+        }
+
+        if(result.asanaClass==AsanaClass.virabhadrasana_i){
+            asanaProcessor?.stop()
+            countDown("0000200",AsanaClass.virabhadrasana_ii)
+        }
+        if(result.asanaClass==AsanaClass.virabhadrasana_ii){
+            asanaProcessor?.stop()
+            countDown("0000200",AsanaClass.utkata_konasana)
+        }
+        if(result.asanaClass==AsanaClass.utkata_konasana){
+            asanaProcessor?.stop()
+            countDown("0000200",AsanaClass.vrikshasana)
         }
 
 //        analysisUseCase?.setAnalyzer(mainExecutor) { imageProxy: ImageProxy ->
