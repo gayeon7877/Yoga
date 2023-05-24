@@ -107,6 +107,8 @@ class AsanaListFragment : Fragment() {
     private fun setListeners() {
         binding.fabOpenPose.setOnClickListener {
             checkPermission()
+            val direction = NavGraphDirections.openAsanaPose()
+            navController.navigate(direction)
         }
 
         binding.fabOpenClass.setOnClickListener{
@@ -135,9 +137,6 @@ class AsanaListFragment : Fragment() {
             showToast("Need Camera permission")
             return
         }
-
-        val direction = NavGraphDirections.openAsanaPose()
-        navController.navigate(direction)
     }
 
 

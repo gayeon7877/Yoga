@@ -284,7 +284,7 @@ class ClassFragment : Fragment() {
 
     }
 
-    fun test() {
+    private fun test() {
         Log.d("왔니", "응!!")
         analysisUseCase?.setAnalyzer(mainExecutor) { imageProxy: ImageProxy ->
             handleImageProxy(imageProxy)
@@ -299,7 +299,7 @@ class ClassFragment : Fragment() {
     }
 
 
-    fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
+    private fun setInferenceUi(poseWithAsanaClassification: PoseWithAsanaClassification) {
         val typeToConfidences = poseWithAsanaClassification.pose.allPoseLandmarks.map {
             Pair(it.landmarkType, it.inFrameLikelihood)
         }
@@ -389,7 +389,7 @@ class ClassFragment : Fragment() {
 //        }
 //    }
 
- fun dowork(){
+ private fun dowork(){
 
 
     }
