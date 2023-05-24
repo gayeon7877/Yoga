@@ -67,6 +67,7 @@ class AsanaListFragment : Fragment() {
             Log.d("1","1")
         }
 
+        binding.btnSettings.setOnClickListener { openSettings() }
 
         // 어댑터 초기화
         recyclerViewAdapter = RecyclerViewAdapter(dataList,this)
@@ -117,6 +118,7 @@ class AsanaListFragment : Fragment() {
             navController.navigate(direction)
 
         }
+
 
     }
 
